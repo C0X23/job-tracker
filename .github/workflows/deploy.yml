@@ -31,11 +31,14 @@ jobs:
           ssh "$DEPLOY_USER@$DEPLOY_HOST" bash <<EOF
             set -euo pipefail
             cd "$DEPLOY_PATH"
+            COMPOSE="docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml"
             git fetch --all --prune
             git reset --hard origin/main
-            docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml pull db caddy || true
-            docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml build web
-            docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --remove-orphans
+            \$COMPOSE pull db caddy || true
+            \$COMPOSE build web
+            \$COMPOSE up -d --remove-orphans
+            # Caddy bind-mounts the Caddyfile but doesn't auto-reload; force it.
+            \$COMPOSE exec -T caddy caddy reload --config /etc/caddy/Caddyfile || \$COMPOSE restart caddy
             docker image prune -f
           EOF
 
