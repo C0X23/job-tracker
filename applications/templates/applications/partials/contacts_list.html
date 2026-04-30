@@ -1,0 +1,44 @@
+{# Reloaded via htmx after add/edit/delete #}
+<div id="contacts-panel">
+  {% if application.contacts.all %}
+  <ul class="divide-y divide-gray-100">
+    {% for contact in application.contacts.all %}
+    <li class="py-3 flex items-start justify-between gap-4">
+      <div class="min-w-0">
+        <p class="text-sm font-medium text-gray-900">{{ contact.name }}</p>
+        {% if contact.role %}<p class="text-xs text-gray-500">{{ contact.role }}</p>{% endif %}
+        <div class="mt-1 flex flex-wrap gap-3 text-xs text-gray-400">
+          {% if contact.email %}<a href="mailto:{{ contact.email }}" class="hover:text-indigo-600">{{ contact.email }}</a>{% endif %}
+          {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
+          {% if contact.linkedin %}<a href="{{ contact.linkedin }}" target="_blank" rel="noopener" class="hover:text-indigo-600">LinkedIn</a>{% endif %}
+        </div>
+        {% if contact.notes %}<p class="mt-2 text-xs text-gray-600 whitespace-pre-wrap">{{ contact.notes }}</p>{% endif %}
+      </div>
+      <div class="flex shrink-0 gap-2 text-xs">
+        <button hx-get="{% url 'contact_update' application.pk contact.pk %}"
+                hx-target="#contacts-panel"
+                hx-swap="outerHTML"
+                class="text-indigo-600 hover:underline">Modifier</button>
+        <button hx-post="{% url 'contact_delete' application.pk contact.pk %}"
+                hx-target="#contacts-panel"
+                hx-swap="outerHTML"
+                hx-confirm="Supprimer ce contact ?"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                class="text-red-600 hover:underline">Supprimer</button>
+      </div>
+    </li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p class="text-sm text-gray-400">Aucun contact associé.</p>
+  {% endif %}
+
+  <div class="mt-4">
+    <button hx-get="{% url 'contact_create' application.pk %}"
+            hx-target="#contacts-panel"
+            hx-swap="outerHTML"
+            class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+      + Ajouter un contact
+    </button>
+  </div>
+</div>

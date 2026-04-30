@@ -1,0 +1,13 @@
+{% load application_tags %}
+<div id="status-widget" class="flex items-center gap-3">
+  <span class="inline-flex items-center rounded-full px-3 py-1 text-sm font-medium {{ status_color }}">
+    {{ application.get_status_display }}
+  </span>
+  <button
+    hx-get="{% url 'application_status_update' application.pk %}"
+    hx-target="#status-widget"
+    hx-swap="outerHTML"
+    class="text-xs text-gray-400 hover:text-gray-600 underline underline-offset-2">
+    Changer
+  </button>
+</div>

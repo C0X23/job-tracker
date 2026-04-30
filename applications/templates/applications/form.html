@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+{% load application_tags %}
+
+{% block title %}{{ title }} — Job Tracker{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto space-y-6">
+
+  <div class="flex items-center gap-4">
+    <a href="{% if object %}{% url 'application_detail' object.pk %}{% else %}{% url 'application_list' %}{% endif %}"
+       class="text-gray-400 hover:text-gray-600">
+      ← Retour
+    </a>
+    <h1 class="text-2xl font-bold text-gray-900">{{ title }}</h1>
+  </div>
+
+  <form method="post" enctype="multipart/form-data" class="space-y-6">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+    <div class="rounded-md bg-red-50 p-4 text-sm text-red-700 border border-red-200">
+      {{ form.non_field_errors }}
+    </div>
+    {% endif %}
+
+    {# Company + Position #}
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Poste</h2>
+
+      <datalist id="company-list">
+        {% for name in companies %}
+        <option value="{{ name }}">
+        {% endfor %}
+      </datalist>
+
+      <div class="grid grid-cols-2 gap-4">
+        {% include "applications/partials/field.html" with field=form.company_name %}
+        {% include "applications/partials/field.html" with field=form.position_title %}
+        {% include "applications/partials/field.html" with field=form.job_url %}
+        {% include "applications/partials/field.html" with field=form.location %}
+        {% include "applications/partials/field.html" with field=form.work_mode %}
+      </div>
+    </div>
+
+    {# Salary #}
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Rémunération</h2>
+      <div class="grid grid-cols-3 gap-4">
+        {% include "applications/partials/field.html" with field=form.salary_min %}
+        {% include "applications/partials/field.html" with field=form.salary_max %}
+        {% include "applications/partials/field.html" with field=form.currency %}
+      </div>
+    </div>
+
+    {# Status & Dates #}
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Statut & Dates</h2>
+      <div class="grid grid-cols-2 gap-4">
+        {% include "applications/partials/field.html" with field=form.source %}
+        {% include "applications/partials/field.html" with field=form.status %}
+        {% include "applications/partials/field.html" with field=form.applied_at %}
+        {% include "applications/partials/field.html" with field=form.next_action_date %}
+      </div>
+    </div>
+
+    {# Notes #}
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-6 space-y-4">
+      <h2 class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Notes & Documents</h2>
+      {% include "applications/partials/field.html" with field=form.cover_letter full=True %}
+      {% include "applications/partials/field.html" with field=form.notes full=True %}
+      {% include "applications/partials/field.html" with field=form.cv_file full=True %}
+    </div>
+
+    <div class="flex justify-end gap-3">
+      <a href="{% if object %}{% url 'application_detail' object.pk %}{% else %}{% url 'application_list' %}{% endif %}"
+         class="rounded-md border border-gray-300 px-5 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50">
+        Annuler
+      </a>
+      <button type="submit"
+              class="rounded-md bg-indigo-600 px-5 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+        Enregistrer
+      </button>
+    </div>
+
+  </form>
+</div>
+{% endblock %}

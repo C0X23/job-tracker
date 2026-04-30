@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+{% load application_tags %}
+
+{% block title %}Candidatures — Job Tracker{% endblock %}
+
+{% block content %}
+<div class="space-y-6">
+
+  <div class="flex items-center justify-between">
+    <h1 class="text-2xl font-bold text-gray-900">Candidatures</h1>
+    <a href="{% url 'application_create' %}"
+       class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors">
+      + Nouvelle
+    </a>
+  </div>
+
+  {# Filters #}
+  <form method="get" class="flex flex-wrap gap-3 items-end bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+    <div class="flex-1 min-w-48">
+      <label class="block text-xs font-medium text-gray-500 mb-1">Recherche</label>
+      <input type="text" name="q" value="{{ current_q }}"
+             placeholder="Poste ou entreprise…"
+             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">Statut</label>
+      <select name="status"
+              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+        <option value="">Tous</option>
+        {% for value, label in status_choices %}
+        <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block text-xs font-medium text-gray-500 mb-1">Source</label>
+      <select name="source"
+              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+        <option value="">Toutes</option>
+        {% for value, label in source_choices %}
+        <option value="{{ value }}" {% if value == current_source %}selected{% endif %}>{{ label }}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <button type="submit"
+            class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 transition-colors">
+      Filtrer
+    </button>
+    {% if current_q or current_status or current_source %}
+    <a href="{% url 'application_list' %}"
+       class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
+      Réinitialiser
+    </a>
+    {% endif %}
+  </form>
+
+  {# Results count #}
+  <p class="text-sm text-gray-500">
+    {{ page_obj.paginator.count }} candidature{{ page_obj.paginator.count|pluralize }}
+    {% if current_q or current_status or current_source %}correspondant aux filtres{% endif %}
+  </p>
+
+  {# Table #}
+  {% if applications %}
+  <div class="overflow-hidden shadow ring-1 ring-gray-200 rounded-lg">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Poste</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Entreprise</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Source</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Statut</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Candidaturé le</th>
+          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Relance</th>
+          <th class="px-4 py-3"></th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-100">
+        {% for app in applications %}
+        <tr class="hover:bg-gray-50 transition-colors">
+          <td class="px-4 py-3">
+            <a href="{% url 'application_detail' app.pk %}"
+               class="font-medium text-indigo-700 hover:text-indigo-900">
+              {{ app.position_title }}
+            </a>
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
+          <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_source_display }}</td>
+          <td class="px-4 py-3">
+            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ app.status|status_color_filter }}">
+              {{ app.get_status_display }}
+            </span>
+          </td>
+          <td class="px-4 py-3 text-sm text-gray-500">
+            {% if app.applied_at %}{{ app.applied_at|date:"d/m/Y" }}{% else %}—{% endif %}
+          </td>
+          <td class="px-4 py-3 text-sm {% if app.needs_followup %}text-red-600 font-semibold{% else %}text-gray-500{% endif %}">
+            {% if app.next_action_date %}{{ app.next_action_date|date:"d/m/Y" }}{% else %}—{% endif %}
+          </td>
+          <td class="px-4 py-3 text-right">
+            <a href="{% url 'application_edit' app.pk %}"
+               class="text-xs text-gray-400 hover:text-gray-700">Modifier</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {# Pagination #}
+  {% if page_obj.has_other_pages %}
+  <nav class="flex items-center justify-between">
+    <div class="text-sm text-gray-500">
+      Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </div>
+    <div class="flex gap-1">
+      {% if page_obj.has_previous %}
+      <a href="?page={{ page_obj.previous_page_number }}&q={{ current_q }}&status={{ current_status }}&source={{ current_source }}"
+         class="rounded px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50">‹ Précédent</a>
+      {% endif %}
+      {% if page_obj.has_next %}
+      <a href="?page={{ page_obj.next_page_number }}&q={{ current_q }}&status={{ current_status }}&source={{ current_source }}"
+         class="rounded px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50">Suivant ›</a>
+      {% endif %}
+    </div>
+  </nav>
+  {% endif %}
+
+  {% else %}
+  <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
+    {% if current_q or current_status or current_source %}
+    <p class="text-gray-500">Aucun résultat pour ces filtres.</p>
+    <a href="{% url 'application_list' %}" class="mt-2 inline-block text-indigo-600 text-sm hover:underline">
+      Voir toutes les candidatures
+    </a>
+    {% else %}
+    <p class="text-gray-500 text-lg font-medium">Aucune candidature encore.</p>
+    <p class="text-gray-400 text-sm mt-1">Commencez par en créer une !</p>
+    <a href="{% url 'application_create' %}"
+       class="mt-4 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+      + Nouvelle candidature
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

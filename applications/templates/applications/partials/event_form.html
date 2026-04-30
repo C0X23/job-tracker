@@ -1,0 +1,32 @@
+{# Inline event form swapped into #timeline-panel via htmx #}
+<div id="timeline-panel">
+  <form hx-post="{% url 'event_create' application.pk %}"
+        hx-target="#timeline-panel"
+        hx-swap="outerHTML"
+        class="space-y-4 rounded-md border border-gray-200 bg-gray-50 p-4">
+    {% csrf_token %}
+
+    <h3 class="text-sm font-semibold text-gray-700">Nouvel événement</h3>
+
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {% include "applications/partials/field.html" with field=form.event_type %}
+      {% include "applications/partials/field.html" with field=form.occurred_at %}
+      {% include "applications/partials/field.html" with field=form.description full=True %}
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit"
+              class="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+        Créer
+      </button>
+      <button type="button"
+              hx-get="{% url 'application_detail' application.pk %}"
+              hx-select="#timeline-panel"
+              hx-target="#timeline-panel"
+              hx-swap="outerHTML"
+              class="text-xs text-gray-500 hover:text-gray-700">
+        Annuler
+      </button>
+    </div>
+  </form>
+</div>

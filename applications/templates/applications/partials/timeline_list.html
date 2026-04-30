@@ -1,0 +1,39 @@
+{# Reloaded via htmx after add/delete #}
+<div id="timeline-panel">
+  {% if application.events.all %}
+  <ol class="relative ml-3 space-y-6 border-l border-gray-200">
+    {% for event in application.events.all %}
+    <li class="ml-6 group">
+      <span class="absolute -left-2 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-100 ring-4 ring-white">
+        <span class="h-2 w-2 rounded-full bg-indigo-600"></span>
+      </span>
+      <div class="flex items-start justify-between gap-3">
+        <div>
+          <p class="text-xs text-gray-400">{{ event.occurred_at|date:"d/m/Y H:i" }} · {{ event.get_event_type_display }}</p>
+          <p class="mt-0.5 text-sm text-gray-700 whitespace-pre-wrap">{{ event.description }}</p>
+        </div>
+        <button hx-post="{% url 'event_delete' application.pk event.pk %}"
+                hx-target="#timeline-panel"
+                hx-swap="outerHTML"
+                hx-confirm="Supprimer cet événement ?"
+                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                class="opacity-0 group-hover:opacity-100 text-xs text-red-600 hover:underline transition">
+          Supprimer
+        </button>
+      </div>
+    </li>
+    {% endfor %}
+  </ol>
+  {% else %}
+  <p class="text-sm text-gray-400">Aucun événement. Les changements de statut apparaîtront ici automatiquement.</p>
+  {% endif %}
+
+  <div class="mt-6">
+    <button hx-get="{% url 'event_create' application.pk %}"
+            hx-target="#timeline-panel"
+            hx-swap="outerHTML"
+            class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+      + Ajouter un événement
+    </button>
+  </div>
+</div>

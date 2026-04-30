@@ -1,0 +1,25 @@
+{% load application_tags %}
+<form id="status-widget"
+      hx-post="{% url 'application_status_update' application.pk %}"
+      hx-target="#status-widget"
+      hx-swap="outerHTML"
+      class="flex items-center gap-2">
+  {% csrf_token %}
+  <select name="status"
+          class="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+    {% for value, label in status_choices %}
+    <option value="{{ value }}" {% if value == application.status %}selected{% endif %}>{{ label }}</option>
+    {% endfor %}
+  </select>
+  <button type="submit"
+          class="rounded-md bg-indigo-600 px-3 py-1 text-xs font-medium text-white hover:bg-indigo-700">
+    OK
+  </button>
+  <button type="button"
+          hx-get="{% url 'application_status_update' application.pk %}"
+          hx-target="#status-widget"
+          hx-swap="outerHTML"
+          class="text-xs text-gray-400 hover:text-gray-600">
+    Annuler
+  </button>
+</form>

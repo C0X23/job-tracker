@@ -1,0 +1,42 @@
+{# Inline contact create/edit form swapped into #contacts-panel via htmx #}
+<div id="contacts-panel">
+  <form
+    {% if action == "create" %}
+    hx-post="{% url 'contact_create' application.pk %}"
+    {% else %}
+    hx-post="{% url 'contact_update' application.pk contact.pk %}"
+    {% endif %}
+    hx-target="#contacts-panel"
+    hx-swap="outerHTML"
+    class="space-y-4 rounded-md border border-gray-200 bg-gray-50 p-4">
+    {% csrf_token %}
+
+    <h3 class="text-sm font-semibold text-gray-700">
+      {% if action == "create" %}Nouveau contact{% else %}Modifier le contact{% endif %}
+    </h3>
+
+    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+      {% include "applications/partials/field.html" with field=form.name %}
+      {% include "applications/partials/field.html" with field=form.role %}
+      {% include "applications/partials/field.html" with field=form.email %}
+      {% include "applications/partials/field.html" with field=form.phone %}
+      {% include "applications/partials/field.html" with field=form.linkedin full=True %}
+      {% include "applications/partials/field.html" with field=form.notes full=True %}
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button type="submit"
+              class="rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+        {% if action == "create" %}Créer{% else %}Enregistrer{% endif %}
+      </button>
+      <button type="button"
+              hx-get="{% url 'application_detail' application.pk %}"
+              hx-select="#contacts-panel"
+              hx-target="#contacts-panel"
+              hx-swap="outerHTML"
+              class="text-xs text-gray-500 hover:text-gray-700">
+        Annuler
+      </button>
+    </div>
+  </form>
+</div>

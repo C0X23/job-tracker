@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard — Job Tracker{% endblock %}
+
+{% block content %}
+<div class="space-y-8">
+
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+    <p class="mt-1 text-sm text-gray-500">Bienvenue, {{ user.email }}</p>
+  </div>
+
+  {% if overdue %}
+  <section>
+    <h2 class="text-lg font-semibold text-red-700 mb-3">
+      ⚠ À relancer aujourd'hui ({{ overdue|length }})
+    </h2>
+    <div class="overflow-hidden shadow ring-1 ring-red-200 rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-red-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entreprise</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date relance</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for app in overdue %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm font-medium text-indigo-700">{{ app.position_title }}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
+            <td class="px-4 py-3 text-sm text-red-600 font-medium">{{ app.next_action_date }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  <section>
+    <div class="flex items-center justify-between mb-3">
+      <h2 class="text-lg font-semibold text-gray-800">Candidatures actives ({{ active|length }})</h2>
+      <a href="/applications/new/" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+        + Nouvelle candidature
+      </a>
+    </div>
+
+    {% if active %}
+    <div class="overflow-hidden shadow ring-1 ring-gray-200 rounded-lg">
+      <table class="min-w-full divide-y divide-gray-200">
+        <thead class="bg-gray-50">
+          <tr>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entreprise</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dernière activité</th>
+          </tr>
+        </thead>
+        <tbody class="bg-white divide-y divide-gray-200">
+          {% for app in active %}
+          <tr class="hover:bg-gray-50">
+            <td class="px-4 py-3 text-sm font-medium text-indigo-700">{{ app.position_title }}</td>
+            <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_source_display }}</td>
+            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
+            <td class="px-4 py-3 text-sm text-gray-400">{{ app.last_activity_at|date:"d/m/Y" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
+      <p class="text-gray-500 text-sm">Aucune candidature active.</p>
+      <a href="/applications/new/" class="mt-3 inline-block text-indigo-600 text-sm font-medium hover:underline">
+        Créer votre première candidature →
+      </a>
+    </div>
+    {% endif %}
+  </section>
+
+</div>
+{% endblock %}

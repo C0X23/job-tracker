@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: ["main", "master"]
+  pull_request:
+
+jobs:
+  lint:
+    name: Lint & type check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install ".[dev]"
+
+      - name: ruff
+        run: ruff check .
+
+      - name: black
+        run: black --check .
+
+      - name: mypy
+        run: mypy applications stats accounts
+        continue-on-error: true
+
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: jobtracker
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
+    env:
+      SECRET_KEY: ci-secret-key-not-used-in-prod
+      DEBUG: "True"
+      DATABASE_URL: postgres://postgres:postgres@localhost:5432/jobtracker
+      ALLOWED_HOSTS: localhost
+      MEDIA_ROOT: /tmp/media
+      STATIC_ROOT: /tmp/static
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install ".[dev]"
+
+      - name: Run migrations
+        run: python manage.py migrate
+
+      - name: Run tests with coverage
+        run: pytest --cov=applications --cov=stats --cov=accounts --cov-report=term-missing
+
+      - name: Coverage check (60%)
+        run: coverage report --fail-under=60

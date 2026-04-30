@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block title %}Statistiques — Job Tracker{% endblock %}
+
+{% block content %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="space-y-8" x-data="statsPage()" x-init="load()">
+
+  <div>
+    <h1 class="text-2xl font-bold text-gray-900">Statistiques</h1>
+    <p class="mt-1 text-sm text-gray-500">Vue d'ensemble de votre recherche</p>
+  </div>
+
+  {# Summary cards #}
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <template x-for="card in summaryCards" :key="card.label">
+      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
+        <p class="text-xs uppercase tracking-wide text-gray-400" x-text="card.label"></p>
+        <p class="mt-2 text-3xl font-bold" :class="card.tone" x-text="card.value"></p>
+      </div>
+    </template>
+  </div>
+
+  {# Charts grid #}
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-gray-700 mb-4">Par statut</h2>
+      <canvas id="chart-status" height="200"></canvas>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
+      <h2 class="text-sm font-semibold text-gray-700 mb-4">Par source</h2>
+      <canvas id="chart-source" height="200"></canvas>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 lg:col-span-2">
+      <h2 class="text-sm font-semibold text-gray-700 mb-4">Volume par semaine (12 dernières)</h2>
+      <canvas id="chart-weekly" height="100"></canvas>
+    </div>
+
+    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 lg:col-span-2">
+      <h2 class="text-sm font-semibold text-gray-700 mb-4">Funnel de conversion</h2>
+      <canvas id="chart-funnel" height="120"></canvas>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function statsPage() {
+    return {
+      summaryCards: [],
+      async load() {
+        const [summary, status, source, weekly, funnel] = await Promise.all([
+          fetch("/api/v1/stats/summary/").then(r => r.json()),
+          fetch("/api/v1/stats/status/").then(r => r.json()),
+          fetch("/api/v1/stats/source/").then(r => r.json()),
+          fetch("/api/v1/stats/weekly/").then(r => r.json()),
+          fetch("/api/v1/stats/funnel/").then(r => r.json()),
+        ]);
+
+        this.summaryCards = [
+          { label: "Total", value: summary.total, tone: "text-gray-900" },
+          { label: "Actives", value: summary.active, tone: "text-indigo-700" },
+          { label: "À relancer", value: summary.overdue, tone: "text-red-600" },
+          { label: "Cette semaine", value: summary.this_week, tone: "text-emerald-700" },
+        ];
+
+        const palette = ["#6366f1","#8b5cf6","#a855f7","#d946ef","#ec4899","#f43f5e","#f59e0b","#10b981","#06b6d4","#3b82f6","#64748b"];
+
+        new Chart(document.getElementById("chart-status"), {
+          type: "doughnut",
+          data: {
+            labels: status.filter(s => s.count > 0).map(s => s.label),
+            datasets: [{
+              data: status.filter(s => s.count > 0).map(s => s.count),
+              backgroundColor: palette,
+            }],
+          },
+          options: { plugins: { legend: { position: "right", labels: { boxWidth: 12, font: { size: 11 } } } } },
+        });
+
+        new Chart(document.getElementById("chart-source"), {
+          type: "bar",
+          data: {
+            labels: source.map(s => s.label),
+            datasets: [{ label: "Candidatures", data: source.map(s => s.count), backgroundColor: "#6366f1" }],
+          },
+          options: { indexAxis: "y", plugins: { legend: { display: false } }, scales: { x: { ticks: { precision: 0 } } } },
+        });
+
+        new Chart(document.getElementById("chart-weekly"), {
+          type: "line",
+          data: {
+            labels: weekly.map(w => {
+              const d = new Date(w.week_start);
+              return d.toLocaleDateString("fr-FR", { day: "2-digit", month: "short" });
+            }),
+            datasets: [{
+              label: "Candidatures",
+              data: weekly.map(w => w.count),
+              borderColor: "#6366f1",
+              backgroundColor: "rgba(99, 102, 241, 0.15)",
+              fill: true,
+              tension: 0.3,
+            }],
+          },
+          options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } },
+        });
+
+        new Chart(document.getElementById("chart-funnel"), {
+          type: "bar",
+          data: {
+            labels: funnel.map(f => f.label),
+            datasets: [{
+              label: "Candidatures",
+              data: funnel.map(f => f.count),
+              backgroundColor: ["#6366f1","#8b5cf6","#a855f7","#10b981"],
+            }],
+          },
+          options: { plugins: { legend: { display: false } }, scales: { y: { ticks: { precision: 0 } } } },
+        });
+      },
+    };
+  }
+</script>
+{% endblock %}

@@ -1,0 +1,37 @@
+{$DOMAIN} {
+    encode gzip zstd
+
+    header {
+        # HSTS handled by Django via SECURE_HSTS_*; Caddy adds basic hardening
+        Referrer-Policy "strict-origin-when-cross-origin"
+        Permissions-Policy "geolocation=(), microphone=(), camera=()"
+        X-Content-Type-Options "nosniff"
+        X-Frame-Options "DENY"
+        -Server
+    }
+
+    # Static files served directly by Caddy from the shared volume
+    handle /static/* {
+        root * /app
+        file_server
+        header Cache-Control "public, max-age=31536000, immutable"
+    }
+
+    handle /media/* {
+        root * /app
+        file_server
+        header Cache-Control "public, max-age=86400"
+    }
+
+    # Everything else proxies to gunicorn
+    reverse_proxy web:8000 {
+        header_up X-Forwarded-Proto {scheme}
+        header_up X-Real-IP {remote_host}
+    }
+
+    log {
+        output stdout
+        format json
+        level INFO
+    }
+}
