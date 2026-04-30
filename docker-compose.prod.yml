@@ -3,8 +3,12 @@ services:
     image: postgres:16-alpine
     volumes:
       - postgres_data:/var/lib/postgresql/data
-    env_file:
-      - .env.prod
+    # Override the dev environment block: prod values come from .env.prod
+    # via compose interpolation. Run with `--env-file .env.prod`.
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       interval: 10s
@@ -16,14 +20,10 @@ services:
     build:
       context: .
       dockerfile: docker/Dockerfile
-    command: >
-      sh -c "python manage.py migrate &&
-             python manage.py collectstatic --noinput &&
-             gunicorn config.wsgi:application
-               --bind 0.0.0.0:8000
-               --workers 2
-               --access-logfile -
-               --error-logfile -"
+    command:
+      - sh
+      - -c
+      - python manage.py migrate && python manage.py collectstatic --noinput && exec gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 2 --access-logfile - --error-logfile -
     volumes:
       - media_data:/app/media
       - static_data:/app/staticfiles
@@ -57,15 +57,20 @@ services:
     image: postgres:16-alpine
     env_file:
       - .env.prod
+    environment:
+      PGPASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - ./backups:/backups
-    entrypoint: >
-      sh -c "while true; do
-               TS=$$(date +%Y%m%d_%H%M%S);
-               pg_dump -h db -U $$POSTGRES_USER $$POSTGRES_DB | gzip > /backups/jobtracker_$$TS.sql.gz;
-               find /backups -name 'jobtracker_*.sql.gz' -mtime +14 -delete;
-               sleep 86400;
-             done"
+    entrypoint:
+      - sh
+      - -c
+      - |
+        while true; do
+          TS=$$(date +%Y%m%d_%H%M%S);
+          pg_dump -h db -U "$$POSTGRES_USER" "$$POSTGRES_DB" | gzip > "/backups/jobtracker_$$TS.sql.gz";
+          find /backups -name 'jobtracker_*.sql.gz' -mtime +14 -delete;
+          sleep 86400;
+        done
     depends_on:
       db:
         condition: service_healthy

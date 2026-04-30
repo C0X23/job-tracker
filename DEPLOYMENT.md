@@ -47,7 +47,7 @@ cp .env.prod.example .env.prod
 nano .env.prod
 
 # First boot
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build
+docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build
 
 # Create the first user
 docker compose exec web python manage.py createsuperuser
@@ -96,7 +96,7 @@ For off-site backups, sync the `backups/` directory to S3 / Backblaze / Hetzner 
 
 ```bash
 # View logs
-docker compose -f docker-compose.yml -f docker-compose.prod.yml logs -f web
+docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml logs -f web
 
 # Run a Django shell
 docker compose exec web python manage.py shell
@@ -114,7 +114,7 @@ docker compose restart web
 cd /home/deploy/job-tracker
 git log --oneline -10                # find the last good commit
 git reset --hard <sha>
-docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d --build web
+docker compose --env-file .env.prod -f docker-compose.yml -f docker-compose.prod.yml up -d --build web
 ```
 
 If a migration is the problem, also restore from the latest pg_dump before redeploying.
