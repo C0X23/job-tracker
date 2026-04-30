@@ -9,7 +9,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy to Hetzner
+    name: Deploy to IONOS
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
