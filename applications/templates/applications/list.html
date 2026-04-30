@@ -6,26 +6,26 @@
 {% block content %}
 <div class="space-y-6">
 
-  <div class="flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-gray-900">Candidatures</h1>
-    <a href="{% url 'application_create' %}"
-       class="rounded-md bg-sapin-600 px-4 py-2 text-sm font-medium text-white hover:bg-sapin-700 transition-colors">
-      + Nouvelle
-    </a>
-  </div>
+  {# Header #}
+  <header class="flex items-end justify-between border-b border-line pb-3">
+    <h1 class="text-[28px] font-semibold tracking-tight text-ink">Candidatures</h1>
+    <span class="font-mono text-xs uppercase tracking-wider text-ink-mute">
+      {{ page_obj.paginator.count }} {{ page_obj.paginator.count|pluralize:"résultat,résultats" }}
+    </span>
+  </header>
 
   {# Filters #}
-  <form method="get" class="flex flex-wrap gap-3 items-end bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+  <form method="get" class="flex flex-wrap items-end gap-6 pb-4 border-b border-line-soft">
     <div class="flex-1 min-w-48">
-      <label class="block text-xs font-medium text-gray-500 mb-1">Recherche</label>
+      <label class="block font-mono text-xs uppercase tracking-wider text-ink-mute mb-1.5">Recherche</label>
       <input type="text" name="q" value="{{ current_q }}"
              placeholder="Poste ou entreprise…"
-             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none" />
+             class="w-full bg-transparent border-0 border-b border-line px-0 py-2 text-sm text-ink placeholder-ink-mute focus:border-accent focus:ring-0 outline-none" />
     </div>
     <div>
-      <label class="block text-xs font-medium text-gray-500 mb-1">Statut</label>
+      <label class="block font-mono text-xs uppercase tracking-wider text-ink-mute mb-1.5">Statut</label>
       <select name="status"
-              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
+              class="bg-transparent border-0 border-b border-line px-0 py-2 text-sm text-ink focus:border-accent focus:ring-0 outline-none">
         <option value="">Tous</option>
         {% for value, label in status_choices %}
         <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
@@ -33,73 +33,69 @@
       </select>
     </div>
     <div>
-      <label class="block text-xs font-medium text-gray-500 mb-1">Source</label>
+      <label class="block font-mono text-xs uppercase tracking-wider text-ink-mute mb-1.5">Source</label>
       <select name="source"
-              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
+              class="bg-transparent border-0 border-b border-line px-0 py-2 text-sm text-ink focus:border-accent focus:ring-0 outline-none">
         <option value="">Toutes</option>
         {% for value, label in source_choices %}
         <option value="{{ value }}" {% if value == current_source %}selected{% endif %}>{{ label }}</option>
         {% endfor %}
       </select>
     </div>
-    <button type="submit"
-            class="rounded-md bg-gray-800 px-4 py-2 text-sm font-medium text-white hover:bg-gray-700 transition-colors">
-      Filtrer
-    </button>
-    {% if current_q or current_status or current_source %}
-    <a href="{% url 'application_list' %}"
-       class="rounded-md border border-gray-300 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 transition-colors">
-      Réinitialiser
-    </a>
-    {% endif %}
+    <div class="flex items-center gap-3 ml-auto">
+      {% if current_q or current_status or current_source %}
+      <a href="{% url 'application_list' %}"
+         class="font-mono text-xs uppercase tracking-wider text-ink-dim hover:text-ink">
+        Réinitialiser
+      </a>
+      {% endif %}
+      <button type="submit"
+              class="bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded-md text-sm transition-colors">
+        Filtrer
+      </button>
+    </div>
   </form>
-
-  {# Results count #}
-  <p class="text-sm text-gray-500">
-    {{ page_obj.paginator.count }} candidature{{ page_obj.paginator.count|pluralize }}
-    {% if current_q or current_status or current_source %}correspondant aux filtres{% endif %}
-  </p>
 
   {# Table #}
   {% if applications %}
-  <div class="overflow-hidden shadow ring-1 ring-gray-200 rounded-lg">
-    <table class="min-w-full divide-y divide-gray-200">
-      <thead class="bg-gray-50">
-        <tr>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Poste</th>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Entreprise</th>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Source</th>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Statut</th>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Candidaturé le</th>
-          <th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 uppercase tracking-wide">Relance</th>
+  <div class="overflow-x-auto">
+    <table class="min-w-full">
+      <thead>
+        <tr class="border-y border-line bg-bg">
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Poste</th>
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Entreprise</th>
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Source</th>
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Statut</th>
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Envoyée</th>
+          <th class="px-4 py-3 text-left font-mono text-xs uppercase tracking-wider text-ink-mute font-medium">Relance</th>
           <th class="px-4 py-3"></th>
         </tr>
       </thead>
-      <tbody class="bg-white divide-y divide-gray-100">
+      <tbody>
         {% for app in applications %}
-        <tr class="hover:bg-gray-50 transition-colors">
+        <tr class="border-b border-line-soft hover:bg-line-soft transition-colors">
           <td class="px-4 py-3">
             <a href="{% url 'application_detail' app.pk %}"
-               class="font-medium text-sapin-700 hover:text-sapin-900">
+               class="text-sm font-medium text-ink hover:text-accent">
               {{ app.position_title }}
             </a>
           </td>
-          <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
-          <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_source_display }}</td>
+          <td class="px-4 py-3 text-sm text-ink">{{ app.company.name }}</td>
+          <td class="px-4 py-3 text-sm text-ink-dim">{{ app.get_source_display }}</td>
           <td class="px-4 py-3">
-            <span class="inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium {{ app.status|status_color_filter }}">
+            <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium tracking-wide {{ app.status|status_color_filter }}">
               {{ app.get_status_display }}
             </span>
           </td>
-          <td class="px-4 py-3 text-sm text-gray-500">
+          <td class="px-4 py-3 font-mono text-sm text-ink-dim tabular">
             {% if app.applied_at %}{{ app.applied_at|date:"d/m/Y" }}{% else %}—{% endif %}
           </td>
-          <td class="px-4 py-3 text-sm {% if app.needs_followup %}text-red-600 font-semibold{% else %}text-gray-500{% endif %}">
+          <td class="px-4 py-3 font-mono text-sm tabular {% if app.needs_followup %}text-danger{% else %}text-ink-dim{% endif %}">
             {% if app.next_action_date %}{{ app.next_action_date|date:"d/m/Y" }}{% else %}—{% endif %}
           </td>
           <td class="px-4 py-3 text-right">
             <a href="{% url 'application_edit' app.pk %}"
-               class="text-xs text-gray-400 hover:text-gray-700">Modifier</a>
+               class="font-mono text-xs uppercase tracking-wider text-ink-mute hover:text-ink">Modifier</a>
           </td>
         </tr>
         {% endfor %}
@@ -109,35 +105,37 @@
 
   {# Pagination #}
   {% if page_obj.has_other_pages %}
-  <nav class="flex items-center justify-between">
-    <div class="text-sm text-gray-500">
-      Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
-    </div>
-    <div class="flex gap-1">
+  <nav class="flex items-center justify-between pt-4">
+    <div class="flex-1">
       {% if page_obj.has_previous %}
       <a href="?page={{ page_obj.previous_page_number }}&q={{ current_q }}&status={{ current_status }}&source={{ current_source }}"
-         class="rounded px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50">‹ Précédent</a>
+         class="font-mono text-xs uppercase tracking-wider text-ink-dim hover:text-ink">← Précédent</a>
       {% endif %}
+    </div>
+    <div class="font-mono text-xs uppercase tracking-wider text-ink-mute tabular">
+      Page {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+    </div>
+    <div class="flex-1 text-right">
       {% if page_obj.has_next %}
       <a href="?page={{ page_obj.next_page_number }}&q={{ current_q }}&status={{ current_status }}&source={{ current_source }}"
-         class="rounded px-3 py-1 text-sm border border-gray-300 hover:bg-gray-50">Suivant ›</a>
+         class="font-mono text-xs uppercase tracking-wider text-ink-dim hover:text-ink">Suivant →</a>
       {% endif %}
     </div>
   </nav>
   {% endif %}
 
   {% else %}
-  <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
+  <div class="text-center py-16 border border-dashed border-line rounded-md">
     {% if current_q or current_status or current_source %}
-    <p class="text-gray-500">Aucun résultat pour ces filtres.</p>
-    <a href="{% url 'application_list' %}" class="mt-2 inline-block text-sapin-600 text-sm hover:underline">
-      Voir toutes les candidatures
+    <p class="text-ink-dim text-sm">Aucun résultat pour ces filtres.</p>
+    <a href="{% url 'application_list' %}" class="mt-2 inline-block font-mono text-xs uppercase tracking-wider text-accent hover:underline">
+      Voir toutes les candidatures →
     </a>
     {% else %}
-    <p class="text-gray-500 text-lg font-medium">Aucune candidature encore.</p>
-    <p class="text-gray-400 text-sm mt-1">Commencez par en créer une !</p>
+    <p class="text-ink text-base font-medium">Aucune candidature encore.</p>
+    <p class="text-ink-dim text-sm mt-1">Commencez par en créer une.</p>
     <a href="{% url 'application_create' %}"
-       class="mt-4 inline-block rounded-md bg-sapin-600 px-4 py-2 text-sm font-medium text-white hover:bg-sapin-700">
+       class="mt-4 inline-block bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded-md text-sm transition-colors">
       + Nouvelle candidature
     </a>
     {% endif %}

@@ -6,20 +6,20 @@
       class="flex items-center gap-2">
   {% csrf_token %}
   <select name="status"
-          class="rounded-md border border-gray-300 px-2 py-1 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
+          class="bg-transparent border-0 border-b border-line px-0 py-1 text-sm text-ink focus:border-accent focus:ring-0 outline-none">
     {% for value, label in status_choices %}
     <option value="{{ value }}" {% if value == application.status %}selected{% endif %}>{{ label }}</option>
     {% endfor %}
   </select>
   <button type="submit"
-          class="rounded-md bg-sapin-600 px-3 py-1 text-xs font-medium text-white hover:bg-sapin-700">
+          class="bg-accent hover:bg-accent-hover text-white px-3 py-1 rounded-md text-xs transition-colors">
     OK
   </button>
   <button type="button"
           hx-get="{% url 'application_status_update' application.pk %}"
           hx-target="#status-widget"
           hx-swap="outerHTML"
-          class="text-xs text-gray-400 hover:text-gray-600">
+          class="font-mono text-xs uppercase tracking-wider text-ink-mute hover:text-ink">
     Annuler
   </button>
 </form>

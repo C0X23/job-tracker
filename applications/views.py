@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -5,7 +7,10 @@ from django.db.models import Q, QuerySet
 from django.http import HttpRequest, HttpResponse
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+
+from stats import services as stats_services
 
 from .forms import ApplicationForm, ContactForm, TimelineEventForm
 from .models import Application, Company, Contact, TimelineEvent
@@ -13,22 +18,22 @@ from .models import Application, Company, Contact, TimelineEvent
 # ── Status badge colours ──────────────────────────────────────────────────────
 
 STATUS_COLORS: dict[str, str] = {
-    Application.Status.DRAFT: "bg-gray-100 text-gray-700",
-    Application.Status.SENT: "bg-blue-100 text-blue-700",
-    Application.Status.SEEN: "bg-purple-100 text-purple-700",
-    Application.Status.PHONE_SCREEN: "bg-yellow-100 text-yellow-700",
-    Application.Status.TECHNICAL: "bg-orange-100 text-orange-700",
-    Application.Status.FINAL: "bg-amber-100 text-amber-700",
-    Application.Status.OFFER: "bg-green-100 text-green-700",
-    Application.Status.ACCEPTED: "bg-sapin-100 text-sapin-700",
-    Application.Status.REJECTED: "bg-red-100 text-red-700",
-    Application.Status.GHOSTED: "bg-gray-100 text-gray-500",
-    Application.Status.WITHDRAWN: "bg-gray-100 text-gray-500",
+    Application.Status.DRAFT: "bg-line-soft text-ink-dim",
+    Application.Status.SENT: "bg-line-soft text-ink",
+    Application.Status.SEEN: "bg-accent-soft text-accent",
+    Application.Status.PHONE_SCREEN: "bg-accent-soft text-accent",
+    Application.Status.TECHNICAL: "bg-accent-soft text-accent",
+    Application.Status.FINAL: "bg-accent-soft text-accent",
+    Application.Status.OFFER: "bg-accent text-white",
+    Application.Status.ACCEPTED: "bg-accent text-white",
+    Application.Status.REJECTED: "bg-danger-soft text-danger",
+    Application.Status.GHOSTED: "bg-line-soft text-ink-mute",
+    Application.Status.WITHDRAWN: "bg-line-soft text-ink-mute",
 }
 
 
 def status_color(status: str) -> str:
-    return STATUS_COLORS.get(status, "bg-gray-100 text-gray-700")
+    return STATUS_COLORS.get(status, "bg-line-soft text-ink-dim")
 
 
 # ── Dashboard ─────────────────────────────────────────────────────────────────
@@ -36,15 +41,65 @@ def status_color(status: str) -> str:
 
 @login_required
 def dashboard(request: HttpRequest) -> HttpResponse:
-    all_apps = Application.objects.filter(user=request.user).select_related("company")
+    user = request.user
+    all_apps = list(
+        Application.objects.filter(user=user)
+        .select_related("company")
+        .order_by("-last_activity_at")
+    )
     overdue = [a for a in all_apps if a.needs_followup]
     active = [a for a in all_apps if a.is_active]
+
+    today = timezone.now().date()
+    week_start = today - timedelta(days=today.weekday())
+
+    interview_statuses = {
+        Application.Status.PHONE_SCREEN,
+        Application.Status.TECHNICAL,
+        Application.Status.FINAL,
+    }
+    interviews_this_week = sum(
+        1
+        for a in all_apps
+        if a.status in interview_statuses
+        and a.next_action_date
+        and week_start <= a.next_action_date <= week_start + timedelta(days=6)
+    )
+
+    sent_or_more = [
+        a
+        for a in all_apps
+        if a.status not in {Application.Status.DRAFT, Application.Status.WITHDRAWN}
+    ]
+    responded = [
+        a
+        for a in sent_or_more
+        if a.status
+        in {
+            Application.Status.SEEN,
+            Application.Status.PHONE_SCREEN,
+            Application.Status.TECHNICAL,
+            Application.Status.FINAL,
+            Application.Status.OFFER,
+            Application.Status.ACCEPTED,
+            Application.Status.REJECTED,
+        }
+    ]
+    response_rate = (
+        round(100 * len(responded) / len(sent_or_more)) if sent_or_more else 0
+    )
+
     return render(
         request,
         "applications/dashboard.html",
         {
             "overdue": overdue,
-            "active": active,
+            "active_count": len(active),
+            "recent_active": active[:8],
+            "interviews_this_week": interviews_this_week,
+            "response_rate": response_rate,
+            "funnel": stats_services.funnel(user),
+            "today": today,
             "status_color": status_color,
         },
     )

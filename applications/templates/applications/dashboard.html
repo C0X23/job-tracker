@@ -1,86 +1,120 @@
 {% extends "base.html" %}
+{% load application_tags %}
 
 {% block title %}Dashboard — Job Tracker{% endblock %}
 
 {% block content %}
-<div class="space-y-8">
+<div class="space-y-10">
 
-  <div>
-    <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-    <p class="mt-1 text-sm text-gray-500">Bienvenue, {{ user.email }}</p>
-  </div>
+  {# Header #}
+  <header>
+    <h1 class="text-[28px] font-semibold tracking-tight text-ink">
+      Bonjour, {{ user.first_name|default:user.email }}
+    </h1>
+    <p class="mt-1 text-sm text-ink-dim">{{ today|date:"l j F Y"|capfirst }}</p>
+  </header>
 
+  {# KPI strip #}
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-paper border border-line rounded-md p-5">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-mute">Actives</p>
+      <p class="mt-2 font-mono text-3xl text-ink tabular">{{ active_count }}</p>
+      <p class="mt-1 text-xs text-ink-dim">candidatures en cours</p>
+    </div>
+    <div class="bg-paper border border-line rounded-md p-5">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-mute">À relancer</p>
+      <p class="mt-2 font-mono text-3xl tabular {% if overdue %}text-danger{% else %}text-ink{% endif %}">{{ overdue|length }}</p>
+      <p class="mt-1 text-xs text-ink-dim">{% if overdue %}aujourd'hui ou en retard{% else %}rien en retard{% endif %}</p>
+    </div>
+    <div class="bg-paper border border-line rounded-md p-5">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-mute">Entretiens</p>
+      <p class="mt-2 font-mono text-3xl text-ink tabular">{{ interviews_this_week }}</p>
+      <p class="mt-1 text-xs text-ink-dim">cette semaine</p>
+    </div>
+    <div class="bg-paper border border-line rounded-md p-5">
+      <p class="font-mono text-xs uppercase tracking-wider text-ink-mute">Taux de réponse</p>
+      <p class="mt-2 font-mono text-3xl text-ink tabular">{{ response_rate }}%</p>
+      <p class="mt-1 text-xs text-ink-dim">vues / envoyées</p>
+    </div>
+  </section>
+
+  {# À relancer #}
   {% if overdue %}
   <section>
-    <h2 class="text-lg font-semibold text-red-700 mb-3">
-      ⚠ À relancer aujourd'hui ({{ overdue|length }})
-    </h2>
-    <div class="overflow-hidden shadow ring-1 ring-red-200 rounded-lg">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-red-50">
-          <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entreprise</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date relance</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {% for app in overdue %}
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3 text-sm font-medium text-sapin-700">{{ app.position_title }}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
-            <td class="px-4 py-3 text-sm text-red-600 font-medium">{{ app.next_action_date }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
+    <div class="flex items-end justify-between border-b border-line pb-3 mb-3">
+      <h2 class="text-[18px] font-semibold text-ink">À relancer</h2>
+      <span class="font-mono text-xs uppercase tracking-wider text-ink-mute">{{ overdue|length }} {{ overdue|length|pluralize:"item,items" }}</span>
     </div>
+    <ul class="divide-y divide-line-soft">
+      {% for app in overdue %}
+      <li class="flex items-center justify-between py-3">
+        <div class="min-w-0">
+          <a href="{% url 'application_detail' app.pk %}" class="text-sm font-medium text-ink hover:text-accent">{{ app.position_title }}</a>
+          <span class="text-sm text-ink-dim"> · {{ app.company.name }}</span>
+        </div>
+        <div class="flex items-center gap-4 text-xs">
+          <span class="font-mono text-danger tabular">{{ app.next_action_date|date:"d/m/Y" }}</span>
+          <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium tracking-wide {{ app.status|status_color_filter }}">
+            {{ app.get_status_display }}
+          </span>
+          <a href="{% url 'application_detail' app.pk %}" class="text-ink-dim hover:text-ink">→</a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
   </section>
   {% endif %}
 
+  {# Activité récente #}
   <section>
-    <div class="flex items-center justify-between mb-3">
-      <h2 class="text-lg font-semibold text-gray-800">Candidatures actives ({{ active|length }})</h2>
-      <a href="/applications/new/" class="rounded-md bg-sapin-600 px-3 py-2 text-sm font-medium text-white hover:bg-sapin-700">
-        + Nouvelle candidature
-      </a>
+    <div class="flex items-end justify-between border-b border-line pb-3 mb-3">
+      <h2 class="text-[18px] font-semibold text-ink">Activité récente</h2>
+      <a href="{% url 'application_list' %}" class="font-mono text-xs uppercase tracking-wider text-ink-mute hover:text-ink">Tout voir →</a>
     </div>
-
-    {% if active %}
-    <div class="overflow-hidden shadow ring-1 ring-gray-200 rounded-lg">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Poste</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Entreprise</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Source</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Statut</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Dernière activité</th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          {% for app in active %}
-          <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3 text-sm font-medium text-sapin-700">{{ app.position_title }}</td>
-            <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_source_display }}</td>
-            <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
-            <td class="px-4 py-3 text-sm text-gray-400">{{ app.last_activity_at|date:"d/m/Y" }}</td>
-          </tr>
-          {% endfor %}
-        </tbody>
-      </table>
-    </div>
+    {% if recent_active %}
+    <ul class="divide-y divide-line-soft">
+      {% for app in recent_active %}
+      <li class="flex items-center justify-between py-3">
+        <div class="min-w-0 flex-1">
+          <a href="{% url 'application_detail' app.pk %}" class="text-sm font-medium text-ink hover:text-accent">{{ app.position_title }}</a>
+          <span class="text-sm text-ink-dim"> · {{ app.company.name }}</span>
+        </div>
+        <div class="flex items-center gap-4 text-xs shrink-0">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-sm text-xs font-medium tracking-wide {{ app.status|status_color_filter }}">
+            {{ app.get_status_display }}
+          </span>
+          <span class="font-mono text-ink-mute tabular">{{ app.last_activity_at|date:"d/m" }}</span>
+          <a href="{% url 'application_detail' app.pk %}" class="text-ink-mute hover:text-ink">→</a>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
     {% else %}
-    <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
-      <p class="text-gray-500 text-sm">Aucune candidature active.</p>
-      <a href="/applications/new/" class="mt-3 inline-block text-sapin-600 text-sm font-medium hover:underline">
-        Créer votre première candidature →
-      </a>
-    </div>
+    <p class="text-sm text-ink-dim py-6 text-center">Aucune candidature active pour le moment.</p>
     {% endif %}
+  </section>
+
+  {# Mini-funnel #}
+  <section>
+    <div class="flex items-end justify-between border-b border-line pb-3 mb-4">
+      <h2 class="text-[18px] font-semibold text-ink">Funnel</h2>
+      <a href="{% url 'stats_page' %}" class="font-mono text-xs uppercase tracking-wider text-ink-mute hover:text-ink">Stats détaillées →</a>
+    </div>
+    {% with first=funnel.0.count|default:0 %}
+    <div class="space-y-2">
+      {% for stage in funnel %}
+      <div class="flex items-center gap-4">
+        <div class="w-24 shrink-0 font-mono text-xs uppercase tracking-wider text-ink-mute">{{ stage.label }}</div>
+        <div class="flex-1 h-7 bg-line-soft rounded-sm relative overflow-hidden">
+          {% if first %}
+          <div class="h-full bg-accent-soft" style="width: {% widthratio stage.count first 100 %}%;"></div>
+          {% endif %}
+        </div>
+        <div class="w-12 shrink-0 font-mono text-sm text-ink tabular text-right">{{ stage.count }}</div>
+      </div>
+      {% endfor %}
+    </div>
+    {% endwith %}
   </section>
 
 </div>

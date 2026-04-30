@@ -1,6 +1,6 @@
 {% load allauth account %}
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-stone-50">
+<html lang="fr" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,86 +8,87 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: { sans: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
           colors: {
-            sapin: {
-              50:'#f0f7f1',100:'#dceee0',200:'#b9ddc1',300:'#8cc69a',400:'#5fad72',
-              500:'#3f9457',600:'#2f7a45',700:'#266338',800:'#1f5030',900:'#1a4128',950:'#0f2818',
-            },
+            bg: '#FBFAF6', paper: '#FFFFFF',
+            ink: { DEFAULT: '#14201A', dim: '#5A6660', mute: '#9AA3A0' },
+            line: { DEFAULT: '#E8E5DC', soft: '#F0EDE4' },
+            accent: { DEFAULT: '#1F4D3A', soft: '#E5EDE7', hover: '#163D2E' },
+            danger: { DEFAULT: '#8B2E2E', soft: '#F4EAEA' },
+          },
+          fontFamily: {
+            sans: ['Inter Tight', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
         },
       },
     };
   </script>
-  <style>body { font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif; }</style>
+  <style>
+    body { background: #FBFAF6; color: #14201A; font-family: 'Inter Tight', 'Inter', system-ui, sans-serif; }
+  </style>
 </head>
-<body class="h-full antialiased text-gray-900">
+<body class="h-full antialiased">
 <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
   <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
-    <div class="inline-flex items-center gap-2 mb-2">
-      <span class="inline-block h-3 w-3 rounded-sm bg-sapin-700"></span>
-      <span class="text-xs uppercase tracking-widest text-gray-500 font-medium">Job Tracker</span>
-    </div>
-    <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+    <p class="font-mono text-xs uppercase tracking-widest text-ink-mute">Job Tracker · v1.0</p>
+    <h1 class="mt-3 text-[28px] font-semibold tracking-tight text-ink">
       Suivez vos candidatures.
     </h1>
-    <p class="mt-2 text-sm text-gray-600">Sans tableur. Sans bordel. Sans IA.</p>
+    <p class="mt-2 text-sm text-ink-dim">Sans tableur. Sans bordel. Sans IA.</p>
   </div>
 
-  <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
+  <div class="mt-10 sm:mx-auto sm:w-full sm:max-w-md">
     {# Demo banner #}
-    <div class="mb-4 rounded-md border border-sapin-200 bg-sapin-50 px-4 py-3 text-sm">
-      <p class="font-medium text-sapin-900">Découvrir sans créer de compte</p>
-      <p class="mt-1 text-sapin-800/80">
+    <div class="mb-6 border-l-2 border-accent bg-accent-soft px-4 py-3">
+      <p class="font-mono text-xs uppercase tracking-wider text-accent">Découvrir sans créer de compte</p>
+      <p class="mt-1.5 text-sm text-ink">
         Un compte démo est rempli avec 12 candidatures, des contacts et une timeline.
       </p>
       <button
         type="button"
         onclick="document.getElementById('id_login').value='demo@cmegret.com';document.getElementById('id_password').value='demo1234';document.getElementById('login-form').submit();"
-        class="mt-2 inline-flex items-center gap-2 rounded-md bg-sapin-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-sapin-800 transition-colors">
+        class="mt-3 bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm transition-colors">
         Se connecter avec le compte démo →
       </button>
     </div>
 
-    <div class="bg-white px-4 py-8 shadow-sm border border-gray-200 sm:rounded-lg sm:px-10">
-      <form id="login-form" method="post" action="{% url 'account_login' %}" class="space-y-6">
+    <div class="bg-paper border border-line rounded-md px-6 py-8 sm:px-8">
+      <form id="login-form" method="post" action="{% url 'account_login' %}" class="space-y-5">
         {% csrf_token %}
         {% for field in form %}
         <div>
-          <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
+          <label for="{{ field.id_for_label }}" class="block font-mono text-xs uppercase tracking-wider text-ink-mute mb-1.5">
             {{ field.label }}
           </label>
-          <div class="mt-1">
-            {% if field.field.widget.input_type == "checkbox" %}
-              {{ field }}
-            {% else %}
-              <input
-                type="{{ field.field.widget.input_type }}"
-                name="{{ field.html_name }}"
-                id="{{ field.id_for_label }}"
-                {% if field.value %}value="{{ field.value }}"{% endif %}
-                class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-sapin-600 focus:outline-none focus:ring-1 focus:ring-sapin-600 sm:text-sm"
-                {% if field.field.required %}required{% endif %}
-              />
-            {% endif %}
-          </div>
+          {% if field.field.widget.input_type == "checkbox" %}
+            {{ field }}
+          {% else %}
+            <input
+              type="{{ field.field.widget.input_type }}"
+              name="{{ field.html_name }}"
+              id="{{ field.id_for_label }}"
+              {% if field.value %}value="{{ field.value }}"{% endif %}
+              class="block w-full bg-transparent border-0 border-b border-line px-0 py-2 text-sm text-ink placeholder-ink-mute focus:border-accent focus:ring-0 outline-none"
+              {% if field.field.required %}required{% endif %}
+            />
+          {% endif %}
           {% if field.errors %}
-          <p class="mt-1 text-sm text-red-600">{{ field.errors|join:", " }}</p>
+          <p class="mt-1.5 text-xs text-danger">{{ field.errors|join:", " }}</p>
           {% endif %}
         </div>
         {% endfor %}
 
-        <div>
+        <div class="pt-2">
           <button
             type="submit"
-            class="flex w-full justify-center rounded-md border border-transparent bg-sapin-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sapin-800 focus:outline-none focus:ring-2 focus:ring-sapin-600 focus:ring-offset-2 transition-colors"
+            class="flex w-full justify-center bg-accent hover:bg-accent-hover text-white px-4 py-2 rounded-md text-sm transition-colors"
           >
             Se connecter
           </button>
@@ -95,9 +96,9 @@
       </form>
     </div>
 
-    <p class="mt-6 text-center text-xs text-gray-400">
+    <p class="mt-8 text-center font-mono text-xs uppercase tracking-wider text-ink-mute">
       Code source sur
-      <a href="https://github.com/C0X23/job-tracker" class="text-sapin-700 hover:underline">GitHub</a>
+      <a href="https://github.com/C0X23/job-tracker" class="text-ink hover:text-accent">GitHub</a>
     </p>
   </div>
 </div>

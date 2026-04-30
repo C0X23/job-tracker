@@ -1,38 +1,33 @@
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-stone-50">
+<html lang="fr" class="h-full">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>{% block title %}Job Tracker{% endblock %}</title>
 
-  {# Inter Tight — clean, slightly condensed sans-serif #}
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
-          fontFamily: {
-            sans: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-          },
           colors: {
-            // Vert sapin : seul accent coloré du design
-            sapin: {
-              50:  '#f0f7f1',
-              100: '#dceee0',
-              200: '#b9ddc1',
-              300: '#8cc69a',
-              400: '#5fad72',
-              500: '#3f9457',
-              600: '#2f7a45',
-              700: '#266338',
-              800: '#1f5030',
-              900: '#1a4128',
-              950: '#0f2818',
-            },
+            bg: '#FBFAF6',
+            paper: '#FFFFFF',
+            ink: { DEFAULT: '#14201A', dim: '#5A6660', mute: '#9AA3A0' },
+            line: { DEFAULT: '#E8E5DC', soft: '#F0EDE4' },
+            accent: { DEFAULT: '#1F4D3A', soft: '#E5EDE7', hover: '#163D2E' },
+            danger: { DEFAULT: '#8B2E2E', soft: '#F4EAEA' },
+          },
+          fontFamily: {
+            sans: ['Inter Tight', 'Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          maxWidth: {
+            '7xl': '1100px',
           },
         },
       },
@@ -41,52 +36,73 @@
   <script src="https://unpkg.com/htmx.org@2.0.2"></script>
   <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
   <style>
-    body { font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif; }
-    .markdown h1 { font-size: 1.25rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #111827; }
-    .markdown h2 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: #111827; }
-    .markdown h3 { font-size: 1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; color: #111827; }
+    :root {
+      --bg: #FBFAF6;
+      --paper: #FFFFFF;
+      --ink: #14201A;
+      --ink-dim: #5A6660;
+      --ink-mute: #9AA3A0;
+      --line: #E8E5DC;
+      --line-soft: #F0EDE4;
+      --accent: #1F4D3A;
+      --accent-soft: #E5EDE7;
+      --accent-hover: #163D2E;
+      --danger: #8B2E2E;
+      --danger-soft: #F4EAEA;
+    }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: 'Inter Tight', 'Inter', system-ui, sans-serif;
+    }
+    .tabular { font-variant-numeric: tabular-nums; }
+    .markdown h1 { font-size: 1.25rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--ink); }
+    .markdown h2 { font-size: 1.125rem; font-weight: 600; margin-top: 1rem; margin-bottom: 0.5rem; color: var(--ink); }
+    .markdown h3 { font-size: 1rem; font-weight: 600; margin-top: 0.75rem; margin-bottom: 0.5rem; color: var(--ink); }
     .markdown p { margin: 0.5rem 0; }
     .markdown ul { list-style: disc; padding-left: 1.5rem; margin: 0.5rem 0; }
     .markdown ol { list-style: decimal; padding-left: 1.5rem; margin: 0.5rem 0; }
     .markdown li { margin: 0.25rem 0; }
-    .markdown a { color: #266338; text-decoration: underline; }
-    .markdown code { background: #f3f4f6; padding: 0.125rem 0.25rem; border-radius: 0.25rem; font-size: 0.85em; }
-    .markdown pre { background: #f3f4f6; padding: 0.75rem; border-radius: 0.375rem; overflow-x: auto; margin: 0.5rem 0; }
+    .markdown a { color: var(--accent); text-decoration: underline; }
+    .markdown code { background: var(--line-soft); padding: 0.125rem 0.25rem; border-radius: 0.25rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
+    .markdown pre { background: var(--line-soft); padding: 0.75rem; border-radius: 0.375rem; overflow-x: auto; margin: 0.5rem 0; font-family: 'JetBrains Mono', monospace; }
     .markdown pre code { background: transparent; padding: 0; }
-    .markdown blockquote { border-left: 3px solid #d1d5db; padding-left: 0.75rem; color: #6b7280; margin: 0.5rem 0; }
+    .markdown blockquote { border-left: 2px solid var(--accent); padding-left: 0.75rem; color: var(--ink-dim); margin: 0.5rem 0; }
     .markdown strong { font-weight: 600; }
     .markdown em { font-style: italic; }
     .markdown table { border-collapse: collapse; margin: 0.5rem 0; }
-    .markdown th, .markdown td { border: 1px solid #e5e7eb; padding: 0.25rem 0.5rem; }
+    .markdown th, .markdown td { border: 1px solid var(--line); padding: 0.25rem 0.5rem; }
   </style>
 </head>
-<body class="h-full antialiased text-gray-900">
+<body class="h-full antialiased">
 
 <div class="min-h-full">
-  <nav class="bg-sapin-900 border-b border-sapin-950">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-      <div class="flex h-16 items-center justify-between">
-        <div class="flex items-center gap-8">
-          <a href="/" class="text-white font-bold text-lg tracking-tight flex items-center gap-2">
-            <span class="inline-block h-2.5 w-2.5 rounded-sm bg-sapin-400"></span>
+  <nav class="bg-paper border-b border-line">
+    <div class="max-w-7xl mx-auto px-8">
+      <div class="flex h-14 items-center justify-between">
+        <div class="flex items-center gap-8 h-14">
+          <a href="/" class="flex items-center gap-2 font-mono text-xs uppercase tracking-widest text-ink">
             Job Tracker
+            <span class="text-ink-mute">·</span>
+            <span class="text-ink-mute font-normal">v1.0</span>
           </a>
           {% if user.is_authenticated %}
-          <div class="flex gap-4">
-            <a href="/" class="text-sapin-100 hover:text-white text-sm font-medium transition-colors">Dashboard</a>
-            <a href="/applications/" class="text-sapin-100 hover:text-white text-sm font-medium transition-colors">Candidatures</a>
-            <a href="/stats/" class="text-sapin-100 hover:text-white text-sm font-medium transition-colors">Stats</a>
+          {% with active=request.resolver_match.url_name %}
+          <div class="flex gap-6 h-14">
+            <a href="/" class="text-sm flex items-center {% if active == 'dashboard' %}text-ink border-b-2 border-accent{% else %}text-ink-dim hover:text-ink border-b-2 border-transparent{% endif %}">Dashboard</a>
+            <a href="{% url 'application_list' %}" class="text-sm flex items-center {% if active == 'application_list' or active == 'application_detail' or active == 'application_edit' or active == 'application_create' %}text-ink border-b-2 border-accent{% else %}text-ink-dim hover:text-ink border-b-2 border-transparent{% endif %}">Candidatures</a>
+            <a href="{% url 'stats_page' %}" class="text-sm flex items-center {% if active == 'stats_page' %}text-ink border-b-2 border-accent{% else %}text-ink-dim hover:text-ink border-b-2 border-transparent{% endif %}">Stats</a>
           </div>
+          {% endwith %}
           {% endif %}
         </div>
         {% if user.is_authenticated %}
         <div class="flex items-center gap-4">
-          <span class="text-sapin-200 text-sm">{{ user.email }}</span>
+          <a href="{% url 'application_create' %}" class="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm transition-colors">+ Nouvelle candidature</a>
+          <span class="text-ink-mute text-xs">{{ user.email }}</span>
           <form method="post" action="{% url 'account_logout' %}">
             {% csrf_token %}
-            <button type="submit" class="text-sapin-100 hover:text-white text-sm font-medium transition-colors">
-              Déconnexion
-            </button>
+            <button type="submit" class="text-ink-dim hover:text-ink text-xs transition-colors">Déconnexion</button>
           </form>
         </div>
         {% endif %}
@@ -94,7 +110,7 @@
     </div>
   </nav>
 
-  <main class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-8">
+  <main class="max-w-7xl mx-auto px-8 py-10">
     {# Toasts auto-dismiss after 4s #}
     {% if messages %}
     <div class="fixed top-20 right-6 z-50 space-y-2 w-full max-w-sm pointer-events-none">
@@ -109,12 +125,12 @@
         x-transition:leave="transition ease-in duration-200"
         x-transition:leave-start="opacity-100 translate-x-0"
         x-transition:leave-end="opacity-0 translate-x-4"
-        class="pointer-events-auto rounded-md px-4 py-3 text-sm shadow-lg flex items-start gap-3
-          {% if message.tags == 'error' %}bg-red-50 text-red-800 border border-red-200
-          {% elif message.tags == 'success' %}bg-sapin-50 text-sapin-900 border border-sapin-200
-          {% else %}bg-blue-50 text-blue-800 border border-blue-200{% endif %}">
+        class="pointer-events-auto px-4 py-3 text-sm flex items-start gap-3 border-l-2
+          {% if message.tags == 'error' %}border-danger bg-danger-soft text-danger
+          {% elif message.tags == 'success' %}border-accent bg-accent-soft text-accent
+          {% else %}border-line bg-paper text-ink{% endif %}">
         <span class="flex-1">{{ message }}</span>
-        <button @click="show = false" class="text-current/60 hover:text-current">×</button>
+        <button @click="show = false" class="opacity-60 hover:opacity-100 leading-none">×</button>
       </div>
       {% endfor %}
     </div>

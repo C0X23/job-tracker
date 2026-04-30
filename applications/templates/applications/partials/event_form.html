@@ -3,20 +3,20 @@
   <form hx-post="{% url 'event_create' application.pk %}"
         hx-target="#timeline-panel"
         hx-swap="outerHTML"
-        class="space-y-4 rounded-md border border-gray-200 bg-gray-50 p-4">
+        class="space-y-5 border border-line rounded-md p-5">
     {% csrf_token %}
 
-    <h3 class="text-sm font-semibold text-gray-700">Nouvel événement</h3>
+    <h3 class="font-mono text-xs uppercase tracking-wider text-ink-mute">Nouvel événement</h3>
 
-    <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-x-6 gap-y-5 sm:grid-cols-2">
       {% include "applications/partials/field.html" with field=form.event_type %}
       {% include "applications/partials/field.html" with field=form.occurred_at %}
       {% include "applications/partials/field.html" with field=form.description full=True %}
     </div>
 
-    <div class="flex items-center gap-3">
+    <div class="flex items-center gap-6 pt-2 border-t border-line-soft">
       <button type="submit"
-              class="rounded-md bg-sapin-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sapin-700">
+              class="bg-accent hover:bg-accent-hover text-white px-3 py-1.5 rounded-md text-sm transition-colors">
         Créer
       </button>
       <button type="button"
@@ -24,7 +24,7 @@
               hx-select="#timeline-panel"
               hx-target="#timeline-panel"
               hx-swap="outerHTML"
-              class="text-xs text-gray-500 hover:text-gray-700">
+              class="font-mono text-xs uppercase tracking-wider text-ink-dim hover:text-ink">
         Annuler
       </button>
     </div>

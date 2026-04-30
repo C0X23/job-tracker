@@ -5,47 +5,47 @@
 {% block content %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
-<div class="space-y-8" x-data="statsPage()" x-init="load()">
+<div class="space-y-10" x-data="statsPage()" x-init="load()">
 
-  <div>
-    <h1 class="text-2xl font-bold text-gray-900">Statistiques</h1>
-    <p class="mt-1 text-sm text-gray-500">Vue d'ensemble de votre recherche</p>
-  </div>
+  <header>
+    <h1 class="text-[28px] font-semibold tracking-tight text-ink">Statistiques</h1>
+    <p class="mt-1 text-sm text-ink-dim">Vue d'ensemble de votre recherche</p>
+  </header>
 
   {# Summary cards #}
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4">
     <template x-for="card in summaryCards" :key="card.label">
-      <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-4">
-        <p class="text-xs uppercase tracking-wide text-gray-400" x-text="card.label"></p>
-        <p class="mt-2 text-3xl font-bold" :class="card.tone" x-text="card.value"></p>
+      <div class="bg-paper border border-line rounded-md p-5">
+        <p class="font-mono text-xs uppercase tracking-wider text-ink-mute" x-text="card.label"></p>
+        <p class="mt-2 font-mono text-3xl tabular text-ink" x-text="card.value"></p>
       </div>
     </template>
-  </div>
+  </section>
 
   {# Charts grid #}
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <section class="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
-      <h2 class="text-sm font-semibold text-gray-700 mb-4">Par statut</h2>
+    <div class="bg-paper border border-line rounded-md p-5">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-ink-mute mb-4">Par statut</h2>
       <canvas id="chart-status" height="200"></canvas>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5">
-      <h2 class="text-sm font-semibold text-gray-700 mb-4">Par source</h2>
+    <div class="bg-paper border border-line rounded-md p-5">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-ink-mute mb-4">Par source</h2>
       <canvas id="chart-source" height="200"></canvas>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 lg:col-span-2">
-      <h2 class="text-sm font-semibold text-gray-700 mb-4">Volume par semaine (12 dernières)</h2>
+    <div class="bg-paper border border-line rounded-md p-5 lg:col-span-2">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-ink-mute mb-4">Volume par semaine — 12 dernières</h2>
       <canvas id="chart-weekly" height="100"></canvas>
     </div>
 
-    <div class="bg-white rounded-lg border border-gray-200 shadow-sm p-5 lg:col-span-2">
-      <h2 class="text-sm font-semibold text-gray-700 mb-4">Funnel de conversion</h2>
+    <div class="bg-paper border border-line rounded-md p-5 lg:col-span-2">
+      <h2 class="font-mono text-xs uppercase tracking-wider text-ink-mute mb-4">Funnel de conversion</h2>
       <canvas id="chart-funnel" height="120"></canvas>
     </div>
 
-  </div>
+  </section>
 </div>
 
 <script>
@@ -62,19 +62,20 @@
         ]);
 
         this.summaryCards = [
-          { label: "Total", value: summary.total, tone: "text-gray-900" },
-          { label: "Actives", value: summary.active, tone: "text-sapin-700" },
-          { label: "À relancer", value: summary.overdue, tone: "text-red-600" },
-          { label: "Cette semaine", value: summary.this_week, tone: "text-sapin-700" },
+          { label: "Total", value: summary.total },
+          { label: "Actives", value: summary.active },
+          { label: "À relancer", value: summary.overdue },
+          { label: "Cette semaine", value: summary.this_week },
         ];
 
-        // Palette monochrome vert sapin (différentes saturations du même vert)
-        const palette = ["#1a4128","#266338","#2f7a45","#3f9457","#5fad72","#8cc69a","#b9ddc1","#dceee0","#1f5030","#266338","#3f9457"];
-        const sapinPrimary = "#266338";
-        const sapinFill = "rgba(38, 99, 56, 0.15)";
+        // Palette monochrome vert sapin — un seul accent décliné en saturations
+        const palette = ["#14201A","#1F4D3A","#266338","#2f7a45","#3f9457","#5fad72","#8cc69a","#b9ddc1","#dceee0","#1F5030","#3f9457"];
+        const accent = "#1F4D3A";
+        const accentFill = "rgba(31, 77, 58, 0.15)";
 
-        Chart.defaults.font.family = "'Inter Tight', system-ui, sans-serif";
-        Chart.defaults.color = "#374151";
+        Chart.defaults.font.family = "'Inter Tight', 'Inter', system-ui, sans-serif";
+        Chart.defaults.color = "#5A6660";
+        Chart.defaults.borderColor = "#E8E5DC";
 
         new Chart(document.getElementById("chart-status"), {
           type: "doughnut",
@@ -94,7 +95,7 @@
           type: "bar",
           data: {
             labels: source.map(s => s.label),
-            datasets: [{ label: "Candidatures", data: source.map(s => s.count), backgroundColor: sapinPrimary }],
+            datasets: [{ label: "Candidatures", data: source.map(s => s.count), backgroundColor: accent }],
           },
           options: { indexAxis: "y", plugins: { legend: { display: false } }, scales: { x: { ticks: { precision: 0 } } } },
         });
@@ -109,8 +110,8 @@
             datasets: [{
               label: "Candidatures",
               data: weekly.map(w => w.count),
-              borderColor: sapinPrimary,
-              backgroundColor: sapinFill,
+              borderColor: accent,
+              backgroundColor: accentFill,
               fill: true,
               tension: 0.3,
             }],
