@@ -1,24 +1,63 @@
 {% load allauth account %}
 <!DOCTYPE html>
-<html lang="fr" class="h-full bg-gray-50">
+<html lang="fr" class="h-full bg-stone-50">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Connexion — Job Tracker</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Inter Tight', 'ui-sans-serif', 'system-ui', 'sans-serif'] },
+          colors: {
+            sapin: {
+              50:'#f0f7f1',100:'#dceee0',200:'#b9ddc1',300:'#8cc69a',400:'#5fad72',
+              500:'#3f9457',600:'#2f7a45',700:'#266338',800:'#1f5030',900:'#1a4128',950:'#0f2818',
+            },
+          },
+        },
+      },
+    };
+  </script>
+  <style>body { font-family: 'Inter Tight', ui-sans-serif, system-ui, sans-serif; }</style>
 </head>
-<body class="h-full">
+<body class="h-full antialiased text-gray-900">
 <div class="flex min-h-full flex-col justify-center py-12 sm:px-6 lg:px-8">
-  <div class="sm:mx-auto sm:w-full sm:max-w-md">
-    <h1 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-      Job Tracker
+  <div class="sm:mx-auto sm:w-full sm:max-w-md text-center">
+    <div class="inline-flex items-center gap-2 mb-2">
+      <span class="inline-block h-3 w-3 rounded-sm bg-sapin-700"></span>
+      <span class="text-xs uppercase tracking-widest text-gray-500 font-medium">Job Tracker</span>
+    </div>
+    <h1 class="mt-2 text-3xl font-bold tracking-tight text-gray-900">
+      Suivez vos candidatures.
     </h1>
-    <p class="mt-2 text-center text-sm text-gray-600">Suivi de candidatures</p>
+    <p class="mt-2 text-sm text-gray-600">Sans tableur. Sans bordel. Sans IA.</p>
   </div>
 
   <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-    <div class="bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
-      <form method="post" action="{% url 'account_login' %}" class="space-y-6">
+    {# Demo banner #}
+    <div class="mb-4 rounded-md border border-sapin-200 bg-sapin-50 px-4 py-3 text-sm">
+      <p class="font-medium text-sapin-900">Découvrir sans créer de compte</p>
+      <p class="mt-1 text-sapin-800/80">
+        Un compte démo est rempli avec 12 candidatures, des contacts et une timeline.
+      </p>
+      <button
+        type="button"
+        onclick="document.getElementById('id_login').value='demo@cmegret.com';document.getElementById('id_password').value='demo1234';document.getElementById('login-form').submit();"
+        class="mt-2 inline-flex items-center gap-2 rounded-md bg-sapin-700 px-3 py-1.5 text-xs font-medium text-white hover:bg-sapin-800 transition-colors">
+        Se connecter avec le compte démo →
+      </button>
+    </div>
+
+    <div class="bg-white px-4 py-8 shadow-sm border border-gray-200 sm:rounded-lg sm:px-10">
+      <form id="login-form" method="post" action="{% url 'account_login' %}" class="space-y-6">
         {% csrf_token %}
         {% for field in form %}
         <div>
@@ -34,7 +73,7 @@
                 name="{{ field.html_name }}"
                 id="{{ field.id_for_label }}"
                 {% if field.value %}value="{{ field.value }}"{% endif %}
-                class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm"
+                class="block w-full appearance-none rounded-md border border-gray-300 px-3 py-2 placeholder-gray-400 shadow-sm focus:border-sapin-600 focus:outline-none focus:ring-1 focus:ring-sapin-600 sm:text-sm"
                 {% if field.field.required %}required{% endif %}
               />
             {% endif %}
@@ -48,13 +87,18 @@
         <div>
           <button
             type="submit"
-            class="flex w-full justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+            class="flex w-full justify-center rounded-md border border-transparent bg-sapin-700 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-sapin-800 focus:outline-none focus:ring-2 focus:ring-sapin-600 focus:ring-offset-2 transition-colors"
           >
             Se connecter
           </button>
         </div>
       </form>
     </div>
+
+    <p class="mt-6 text-center text-xs text-gray-400">
+      Code source sur
+      <a href="https://github.com/C0X23/job-tracker" class="text-sapin-700 hover:underline">GitHub</a>
+    </p>
   </div>
 </div>
 </body>

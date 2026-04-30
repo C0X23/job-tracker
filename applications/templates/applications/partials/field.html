@@ -4,7 +4,7 @@
   </label>
   {% if field.field.widget.input_type == "select" %}
     <select name="{{ field.html_name }}" id="{{ field.id_for_label }}"
-            class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+            class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
       {% for option_value, option_label in field.field.choices %}
       <option value="{{ option_value }}" {% if field.value|stringformat:"s" == option_value|stringformat:"s" %}selected{% endif %}>
         {{ option_label }}
@@ -14,10 +14,10 @@
   {% elif field.field.widget.input_type == "textarea" %}
     <textarea name="{{ field.html_name }}" id="{{ field.id_for_label }}"
               rows="{{ field.field.widget.attrs.rows|default:3 }}"
-              class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">{{ field.value|default:"" }}</textarea>
+              class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">{{ field.value|default:"" }}</textarea>
   {% elif field.field.widget.input_type == "file" %}
     <input type="file" name="{{ field.html_name }}" id="{{ field.id_for_label }}"
-           class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-indigo-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-indigo-700 hover:file:bg-indigo-100" />
+           class="block w-full text-sm text-gray-500 file:mr-4 file:rounded-md file:border-0 file:bg-sapin-50 file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-sapin-700 hover:file:bg-sapin-100" />
     {% if field.value %}
     <p class="mt-1 text-xs text-gray-500">Fichier actuel : {{ field.value }}</p>
     {% endif %}
@@ -29,7 +29,7 @@
            {% if field.field.widget.attrs.list %}list="{{ field.field.widget.attrs.list }}"{% endif %}
            {% if field.field.widget.attrs.autocomplete %}autocomplete="{{ field.field.widget.attrs.autocomplete }}"{% endif %}
            {% if field.field.required %}required{% endif %}
-           class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+           class="block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none" />
   {% endif %}
   {% if field.errors %}
   <p class="mt-1 text-xs text-red-600">{{ field.errors|join:", " }}</p>

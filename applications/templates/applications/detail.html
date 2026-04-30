@@ -14,7 +14,7 @@
       <p class="mt-0.5 text-gray-500">
         <a href="{% if application.company.website %}{{ application.company.website }}{% else %}#{% endif %}"
            target="_blank"
-           class="font-medium text-indigo-700 hover:underline">
+           class="font-medium text-sapin-700 hover:underline">
           {{ application.company.name }}
         </a>
         {% if application.location %} · {{ application.location }}{% endif %}
@@ -66,7 +66,7 @@
     {% if application.job_url %}
     <div>
       <a href="{{ application.job_url }}" target="_blank"
-         class="text-sm text-indigo-600 hover:underline">
+         class="text-sm text-sapin-600 hover:underline">
         Voir l'annonce →
       </a>
     </div>
@@ -79,7 +79,7 @@
     <div class="flex border-b border-gray-200">
       {% for t, label in tabs %}
       <button @click="tab = '{{ t }}'"
-              :class="tab === '{{ t }}' ? 'border-b-2 border-indigo-600 text-indigo-700 bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
+              :class="tab === '{{ t }}' ? 'border-b-2 border-sapin-600 text-sapin-700 bg-white' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'"
               class="px-5 py-3 text-sm font-medium transition-colors">
         {{ label }}
       </button>
@@ -98,7 +98,7 @@
       <div>
         <h3 class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">CV</h3>
         <a href="{{ application.cv_file.url }}" target="_blank"
-           class="text-sm text-indigo-600 hover:underline">
+           class="text-sm text-sapin-600 hover:underline">
           Télécharger le CV
         </a>
       </div>
@@ -113,11 +113,11 @@
       {% if application.notes %}
       <div class="markdown text-sm text-gray-700 leading-relaxed">{{ application.notes|markdown }}</div>
       <p class="mt-4 text-xs text-gray-400">
-        <a href="{% url 'application_edit' application.pk %}" class="hover:text-indigo-600">Modifier les notes →</a>
+        <a href="{% url 'application_edit' application.pk %}" class="hover:text-sapin-600">Modifier les notes →</a>
         · Markdown supporté
       </p>
       {% else %}
-      <p class="text-sm text-gray-400">Aucune note. <a href="{% url 'application_edit' application.pk %}" class="text-indigo-600 hover:underline">Ajouter →</a></p>
+      <p class="text-sm text-gray-400">Aucune note. <a href="{% url 'application_edit' application.pk %}" class="text-sapin-600 hover:underline">Ajouter →</a></p>
       {% endif %}
     </div>
 

@@ -20,7 +20,7 @@ STATUS_COLORS: dict[str, str] = {
     Application.Status.TECHNICAL: "bg-orange-100 text-orange-700",
     Application.Status.FINAL: "bg-amber-100 text-amber-700",
     Application.Status.OFFER: "bg-green-100 text-green-700",
-    Application.Status.ACCEPTED: "bg-emerald-100 text-emerald-700",
+    Application.Status.ACCEPTED: "bg-sapin-100 text-sapin-700",
     Application.Status.REJECTED: "bg-red-100 text-red-700",
     Application.Status.GHOSTED: "bg-gray-100 text-gray-500",
     Application.Status.WITHDRAWN: "bg-gray-100 text-gray-500",

@@ -8,9 +8,9 @@
         <p class="text-sm font-medium text-gray-900">{{ contact.name }}</p>
         {% if contact.role %}<p class="text-xs text-gray-500">{{ contact.role }}</p>{% endif %}
         <div class="mt-1 flex flex-wrap gap-3 text-xs text-gray-400">
-          {% if contact.email %}<a href="mailto:{{ contact.email }}" class="hover:text-indigo-600">{{ contact.email }}</a>{% endif %}
+          {% if contact.email %}<a href="mailto:{{ contact.email }}" class="hover:text-sapin-600">{{ contact.email }}</a>{% endif %}
           {% if contact.phone %}<span>{{ contact.phone }}</span>{% endif %}
-          {% if contact.linkedin %}<a href="{{ contact.linkedin }}" target="_blank" rel="noopener" class="hover:text-indigo-600">LinkedIn</a>{% endif %}
+          {% if contact.linkedin %}<a href="{{ contact.linkedin }}" target="_blank" rel="noopener" class="hover:text-sapin-600">LinkedIn</a>{% endif %}
         </div>
         {% if contact.notes %}<p class="mt-2 text-xs text-gray-600 whitespace-pre-wrap">{{ contact.notes }}</p>{% endif %}
       </div>
@@ -18,7 +18,7 @@
         <button hx-get="{% url 'contact_update' application.pk contact.pk %}"
                 hx-target="#contacts-panel"
                 hx-swap="outerHTML"
-                class="text-indigo-600 hover:underline">Modifier</button>
+                class="text-sapin-600 hover:underline">Modifier</button>
         <button hx-post="{% url 'contact_delete' application.pk contact.pk %}"
                 hx-target="#contacts-panel"
                 hx-swap="outerHTML"
@@ -37,7 +37,7 @@
     <button hx-get="{% url 'contact_create' application.pk %}"
             hx-target="#contacts-panel"
             hx-swap="outerHTML"
-            class="inline-flex items-center gap-1 rounded-md bg-indigo-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-indigo-700">
+            class="inline-flex items-center gap-1 rounded-md bg-sapin-600 px-3 py-1.5 text-xs font-medium text-white hover:bg-sapin-700">
       + Ajouter un contact
     </button>
   </div>

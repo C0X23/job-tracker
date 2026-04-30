@@ -28,7 +28,7 @@
         <tbody class="bg-white divide-y divide-gray-200">
           {% for app in overdue %}
           <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3 text-sm font-medium text-indigo-700">{{ app.position_title }}</td>
+            <td class="px-4 py-3 text-sm font-medium text-sapin-700">{{ app.position_title }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
             <td class="px-4 py-3 text-sm text-red-600 font-medium">{{ app.next_action_date }}</td>
@@ -43,7 +43,7 @@
   <section>
     <div class="flex items-center justify-between mb-3">
       <h2 class="text-lg font-semibold text-gray-800">Candidatures actives ({{ active|length }})</h2>
-      <a href="/applications/new/" class="rounded-md bg-indigo-600 px-3 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+      <a href="/applications/new/" class="rounded-md bg-sapin-600 px-3 py-2 text-sm font-medium text-white hover:bg-sapin-700">
         + Nouvelle candidature
       </a>
     </div>
@@ -63,7 +63,7 @@
         <tbody class="bg-white divide-y divide-gray-200">
           {% for app in active %}
           <tr class="hover:bg-gray-50">
-            <td class="px-4 py-3 text-sm font-medium text-indigo-700">{{ app.position_title }}</td>
+            <td class="px-4 py-3 text-sm font-medium text-sapin-700">{{ app.position_title }}</td>
             <td class="px-4 py-3 text-sm text-gray-700">{{ app.company.name }}</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_source_display }}</td>
             <td class="px-4 py-3 text-sm text-gray-500">{{ app.get_status_display }}</td>
@@ -76,7 +76,7 @@
     {% else %}
     <div class="text-center py-12 bg-white rounded-lg border border-gray-200">
       <p class="text-gray-500 text-sm">Aucune candidature active.</p>
-      <a href="/applications/new/" class="mt-3 inline-block text-indigo-600 text-sm font-medium hover:underline">
+      <a href="/applications/new/" class="mt-3 inline-block text-sapin-600 text-sm font-medium hover:underline">
         Créer votre première candidature →
       </a>
     </div>

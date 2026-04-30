@@ -9,7 +9,7 @@
   <div class="flex items-center justify-between">
     <h1 class="text-2xl font-bold text-gray-900">Candidatures</h1>
     <a href="{% url 'application_create' %}"
-       class="rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 transition-colors">
+       class="rounded-md bg-sapin-600 px-4 py-2 text-sm font-medium text-white hover:bg-sapin-700 transition-colors">
       + Nouvelle
     </a>
   </div>
@@ -20,12 +20,12 @@
       <label class="block text-xs font-medium text-gray-500 mb-1">Recherche</label>
       <input type="text" name="q" value="{{ current_q }}"
              placeholder="Poste ou entreprise…"
-             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none" />
+             class="w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none" />
     </div>
     <div>
       <label class="block text-xs font-medium text-gray-500 mb-1">Statut</label>
       <select name="status"
-              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
         <option value="">Tous</option>
         {% for value, label in status_choices %}
         <option value="{{ value }}" {% if value == current_status %}selected{% endif %}>{{ label }}</option>
@@ -35,7 +35,7 @@
     <div>
       <label class="block text-xs font-medium text-gray-500 mb-1">Source</label>
       <select name="source"
-              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none">
+              class="rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-sapin-500 focus:ring-1 focus:ring-sapin-500 outline-none">
         <option value="">Toutes</option>
         {% for value, label in source_choices %}
         <option value="{{ value }}" {% if value == current_source %}selected{% endif %}>{{ label }}</option>
@@ -80,7 +80,7 @@
         <tr class="hover:bg-gray-50 transition-colors">
           <td class="px-4 py-3">
             <a href="{% url 'application_detail' app.pk %}"
-               class="font-medium text-indigo-700 hover:text-indigo-900">
+               class="font-medium text-sapin-700 hover:text-sapin-900">
               {{ app.position_title }}
             </a>
           </td>
@@ -130,14 +130,14 @@
   <div class="text-center py-16 bg-white rounded-lg border border-gray-200">
     {% if current_q or current_status or current_source %}
     <p class="text-gray-500">Aucun résultat pour ces filtres.</p>
-    <a href="{% url 'application_list' %}" class="mt-2 inline-block text-indigo-600 text-sm hover:underline">
+    <a href="{% url 'application_list' %}" class="mt-2 inline-block text-sapin-600 text-sm hover:underline">
       Voir toutes les candidatures
     </a>
     {% else %}
     <p class="text-gray-500 text-lg font-medium">Aucune candidature encore.</p>
     <p class="text-gray-400 text-sm mt-1">Commencez par en créer une !</p>
     <a href="{% url 'application_create' %}"
-       class="mt-4 inline-block rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700">
+       class="mt-4 inline-block rounded-md bg-sapin-600 px-4 py-2 text-sm font-medium text-white hover:bg-sapin-700">
       + Nouvelle candidature
     </a>
     {% endif %}
