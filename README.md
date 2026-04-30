@@ -8,7 +8,7 @@ Outil personnel de suivi de candidatures, construit avec Django.
 ![Docker](https://img.shields.io/badge/Docker-Compose-blue?logo=docker)
 ![CI](https://github.com/C0X23/job-tracker/actions/workflows/ci.yml/badge.svg)
 
-> **Démo live** : [job-tracker.cmegret.com](https://job-tracker.cmegret.com) *(Sprint 5)*
+> **Démo live** : [job-tracker.cmegret.com](https://job-tracker.cmegret.com)
 
 ---
 

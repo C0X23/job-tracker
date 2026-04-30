@@ -8,6 +8,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Sprint 5 — Production
+- IONOS VPS bootstrap: Ubuntu 24.04 + Docker + ufw + dedicated `deploy` user
+- TLS via Caddy + Let's Encrypt for `job-tracker.cmegret.com`
+- Hardened production settings (HSTS, secure cookies, X-Forwarded-Proto, WhiteNoise compressed manifest)
+- Daily Postgres backups with 14-day retention
+- GitHub Actions CD pipeline: SSH deploy after CI green, smoke test on `/accounts/login/`
+
 ### Sprint 4 — Stats & Reminders
 - DRF endpoints under `/api/v1/stats/` (summary, status, source, weekly, funnel)
 - Stats page with Chart.js (doughnut, bar, line, funnel)
