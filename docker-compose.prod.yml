@@ -76,6 +76,31 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
+  # Public demo account is reset every 24h so visitors always see a populated app
+  # and we contain the blast radius of any vandalism.
+  demo-reset:
+    image: job-tracker-web:latest
+    env_file:
+      - .env.prod
+    environment:
+      DJANGO_SETTINGS_MODULE: config.settings.prod
+    entrypoint:
+      - sh
+      - -c
+      - |
+        # Wait once on first boot so /static/ etc. are ready
+        sleep 30
+        while true; do
+          python manage.py seed_demo || echo "seed_demo failed, will retry next cycle"
+          sleep 86400
+        done
+    depends_on:
+      web:
+        condition: service_started
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   media_data:

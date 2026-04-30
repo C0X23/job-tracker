@@ -1,0 +1,47 @@
+version: 2
+updates:
+  # Python deps in pyproject.toml
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels: ["dependencies", "python"]
+    commit-message:
+      prefix: "chore(deps)"
+    groups:
+      django-stack:
+        patterns:
+          - "django*"
+          - "djangorestframework*"
+      dev-tooling:
+        patterns:
+          - "ruff"
+          - "black"
+          - "mypy*"
+          - "pytest*"
+          - "factory-boy"
+          - "coverage"
+
+  # GitHub Actions versions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "ci"]
+    commit-message:
+      prefix: "chore(ci)"
+
+  # Base images in the Dockerfile
+  - package-ecosystem: "docker"
+    directory: "/docker"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+    labels: ["dependencies", "docker"]
+    commit-message:
+      prefix: "chore(docker)"
